@@ -1,6 +1,12 @@
 package Utility;
 
-import static org.testng.Assert.assertTrue;
+//import static org.testng.Assert.assertTrue;
+
+//import static org.testng.Assert.assertTrue;
+import org.junit.Assert;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,7 +21,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
-import org.testng.Assert;
+//import org.testng.Assert;
 
 import com.aventstack.extentreports.Status;
 
@@ -148,8 +154,8 @@ public class ValidationKeyword extends GenericKeywords{
 	    try {
 	        WebElement e = driver.findElement(getLocator(locatorkey));
 	        String text = e.getText();
-	        
-	        assertTrue(e.isDisplayed(), text + " Element is present");
+	        assertTrue(e.isDisplayed()+ text + " Element is present", true);
+//	        assertTrue(e.isDisplayed(), text + " Element is present");
 	        test.log(Status.PASS, text + " Element is present");
 	       // generateScreenshots(text);
 	        
@@ -167,7 +173,7 @@ public class ValidationKeyword extends GenericKeywords{
 	    try {
 	        WebElement element = driver.findElement(getLocator(locatorKey));
 
-	        assertTrue(element.isDisplayed(), elementName + " Element is present");
+	        assertTrue(element.isDisplayed()+ elementName + " Element is present",true);
 	        test.log(Status.PASS, elementName + " Element is present");
 
 	    } catch (AssertionError ae) {
@@ -279,7 +285,7 @@ public class ValidationKeyword extends GenericKeywords{
 	        WebElement e = driver.findElement(getLocator(locatorkey));
 	        String text = e.getText();
 	        
-	        assertTrue(e.isDisplayed(), text + " Element is present");
+	        assertTrue(e.isDisplayed()+ text + " Element is present",true);
 	        test.log(Status.PASS, text + " Element is present");
 	        generateScreenshots(text);
 	        
@@ -323,12 +329,12 @@ public class ValidationKeyword extends GenericKeywords{
 		if(companyError.isDisplayed()){
 			if(companyError.getText().toLowerCase().equals(error)){
 				test.log(Status.PASS, companyError.getText()+ "error is displayed if confirm button is clicked without selecting the company");
-				Assert.assertTrue(true , companyError.getText()+" is displayed");
+				assertTrue(companyError.getText()+" is displayed",true);
 				generateScreenshots(companyError.getText());
 			}
 		}else if(!companyError.isDisplayed()) {
 			test.log(Status.FAIL, "Error not displayed for submitting without selecting the company");
-			Assert.assertTrue(false, error+" is not displayed");
+			assertTrue(error+" is not displayed", false);
 			generateScreenshots(error);
 		}
 	}
@@ -343,22 +349,23 @@ public class ValidationKeyword extends GenericKeywords{
         }
         return headers;
     }
+	
 	public void validateLicenseeTableHeaders(String tableLocator) {
         String[] actualHeaders = getTableHeaders(tableLocator);
         String[] expectedHeaders = {"Licensee Name", "Licensee ID", "Default Company" , "License Start Date" , "License End Date",
         		 "No. Of Card" ,"Total Consumed Card" , "ID-Card Allowed" , "Language" , "Created On" , "Action"}; 
-        Assert.assertEquals(actualHeaders, expectedHeaders, "Table headers do not match expected.");
+        assertTrue("Table headers do not match expected.", Arrays.equals(actualHeaders, expectedHeaders));
     }
 	public void validateManageCompanyTableHeaders(String tableLocator) {
         String[] actualHeaders = getTableHeaders(tableLocator);
         String[] expectedHeaders = {"Company", "Email", "Contact" , "Image" , "Created On","Action"}; 
-        Assert.assertEquals(actualHeaders, expectedHeaders, "Table headers do not match expected.");
+        assertEquals( "Table headers do not match expected.",Arrays.equals(actualHeaders, expectedHeaders));
     }
 	
 	public void validateDashboardTableHeaders(String tableLocator) {
 		 String[] actualHeaders = getTableHeaders(tableLocator);
 		 String[] expectedHeaders = {"Employee Name", "Total Impressions", "Unique Impression" , "Redirect From"}; 
-        Assert.assertEquals(actualHeaders, expectedHeaders, "Table headers do not match expected.");
+		 assertEquals( "Table headers do not match expected.",Arrays.equals(actualHeaders, expectedHeaders));
 	}
 	
 	public void validateEmployeeNoData() {

@@ -5,17 +5,10 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 import java.io.FileInputStream;
-import java.util.List;
 import java.util.Properties;
 
-import org.openqa.selenium.Alert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebElement;
-import org.testng.asserts.SoftAssert;
-
 import com.aventstack.extentreports.ExtentTest;
-import com.aventstack.extentreports.Status;
 
 public class ApplicationKeyword extends ValidationKeyword{
 	
