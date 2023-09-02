@@ -16,22 +16,15 @@ public class ApplicationKeyword extends ValidationKeyword{
 		
 	
 	public ApplicationKeyword() {
-		String path = System.getProperty("user.dir")+"//Properties//env.properties";
-		envprop = new Properties();
-		prop = new Properties();
-		try {
-			FileInputStream file = new FileInputStream(path);
-			envprop.load(file);
-			String environment = envprop.getProperty("env")+".properties";
-			path =  System.getProperty("user.dir")+"//Properties//"+environment;
-			file = new FileInputStream(path);
-			prop.load(file);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		//softAssert = new SoftAssert();
+	    String path = System.getProperty("user.dir") + "\\Properties\\User.properties";
+	    prop = new Properties();
+	    try {
+	        FileInputStream file = new FileInputStream(path);
+	        prop.load(file);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    //softAssert = new SoftAssert();
 	}
 	
 	
