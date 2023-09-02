@@ -16,14 +16,14 @@ public class ApplicationKeyword extends ValidationKeyword{
 		
 	
 	public ApplicationKeyword() {
-		String path = System.getProperty("user.dir")+"\\Properties\\env.properties";
+		String path = System.getProperty("user.dir")+"//Properties//env.properties";
 		envprop = new Properties();
 		prop = new Properties();
 		try {
 			FileInputStream file = new FileInputStream(path);
 			envprop.load(file);
 			String environment = envprop.getProperty("env")+".properties";
-			path =  System.getProperty("user.dir")+"\\Properties\\"+environment;
+			path =  System.getProperty("user.dir")+"//Properties//"+environment;
 			file = new FileInputStream(path);
 			prop.load(file);
 

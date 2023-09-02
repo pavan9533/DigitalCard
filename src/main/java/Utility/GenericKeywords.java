@@ -36,6 +36,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -101,7 +102,9 @@ public class GenericKeywords {
 	        driver = new ChromeDriver(ops);
 	    } else if (browser.equals("firefox")) {
 	        WebDriverManager.firefoxdriver().setup();
-	        driver = new FirefoxDriver();
+	        FirefoxOptions options = new FirefoxOptions();
+	        options.addArguments("--private");
+	        driver = new FirefoxDriver(options);
 	    } else if (browser.equals("edge")) {
 	        WebDriverManager.edgedriver().setup();
 	        EdgeOptions options = new EdgeOptions();
@@ -182,8 +185,8 @@ public class GenericKeywords {
 	public void getText(String locatorKey) {
 		WebElement e = driver.findElement(getLocator(locatorKey));
 		if(e.isDisplayed()) {
-		String text=e.getText();
-		test.log(Status.PASS, text);
+			String text=e.getText();
+			test.log(Status.PASS, text);
 		}else {
 			test.log(Status.INFO, "Text is not present");
 		}
@@ -704,6 +707,12 @@ public class GenericKeywords {
 		
 	}
 	
+	public String readTextFromInputField(String locator) {
+	    WebElement inputElement = driver.findElement(getLocator(locator));
+	    String text = inputElement.getAttribute("value");
+	    return text;
+	}
+	
 	public String countRowsInTableAsString(String locator) {
 	    WebElement table = driver.findElement(getLocator(locator));
 	    List<WebElement> rows = table.findElements(By.tagName("tr"));
@@ -775,20 +784,75 @@ public class GenericKeywords {
 	    return data;
 	}
 	
+//	public String readExcelDataAsString(String columnName, String nameOfSheet) {
+//	    String filePath = System.getProperty("user.dir") + "//Excel//data.xlsx";
+//	    String sheetName = nameOfSheet;
+//	    int startingRowIndex = 1; // Assuming the data starts from the second row (row index 1)
+//
+//	    StringBuilder data = new StringBuilder(); // Use a StringBuilder to concatenate data
+//
+//	    try (FileInputStream fileInputStream = new FileInputStream(filePath);
+//	         Workbook workbook = new XSSFWorkbook(fileInputStream)) {
+//
+//	        Sheet sheet = workbook.getSheet(sheetName);
+//
+//	        // Find the column index for the specified column name
+//	        Row headerRow = sheet.getRow(0);
+//	        int columnIndex = -1;
+//	        for (Cell cell : headerRow) {
+//	            if (cell.getStringCellValue().equalsIgnoreCase(columnName)) {
+//	                columnIndex = cell.getColumnIndex();
+//	                break;
+//	            }
+//	        }
+//
+//	        // Retrieve the data from the specified column
+//	        int lastRowIndex = sheet.getLastRowNum();
+//	        for (int rowIndex = startingRowIndex; rowIndex <= lastRowIndex; rowIndex++) {
+//	            Row dataRow = sheet.getRow(rowIndex);
+//	            if (dataRow != null) {
+//	                Cell cell = dataRow.getCell(columnIndex, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+//	                if (cell != null) {
+//	                    cell.setCellType(CellType.STRING);
+//	                    String cellValue = cell.getStringCellValue();
+//	                    data.append(cellValue).append("\n"); // Append each value to the StringBuilder with a new line separator
+//	                } else {
+//	                    data.append("\n"); // Add a new line for blank cells
+//	                }
+//	            }
+//	        }
+//
+//	    } catch (Exception e) {
+//	        e.printStackTrace();
+//	        test.log(Status.FAIL, e.getMessage());
+//	        return null;
+//	    }
+//
+//	    return data.toString(); // Convert the StringBuilder to a single string and return it
+//	}
+
+	
 	public String readExcelDataAsString(String columnName, String nameOfSheet) {
-	    List<String> data = readExcelData(columnName, nameOfSheet);
-	    if (data == null || data.isEmpty()) {
-	        test.log(Status.FAIL, "Data is not present in the excel");
-	        return ""; // Return an empty string if the data retrieval failed or if there is no data
-	    }
+	    try {
+	        List<String> data = readExcelData(columnName, nameOfSheet);
+	        if (data == null || data.isEmpty()) {
+	            test.log(Status.FAIL, "Data is not present in the excel");
+	            return ""; // Return an empty string if the data retrieval failed or if there is no data
+	        }
 
-	    StringBuilder stringBuilder = new StringBuilder();
-	    for (String value : data) {
-	        stringBuilder.append(value).append("\n"); // Append each value to the string with a new line separator
-	    }
+	        StringBuilder stringBuilder = new StringBuilder();
+	        for (String value : data) {
+	            stringBuilder.append(value).append("\n"); // Append each value to the string with a new line separator
+	        }
 
-	    return stringBuilder.toString();
+	        return stringBuilder.toString();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        test.log(Status.FAIL, "An error occurred while reading Excel data: " + e.getMessage());
+	        return ""; // Return an empty string in case of an exception
+	    }
 	}
+
 
 	public List<String> getTextFromExcel(String columnName, String nameOfSheet) {
 		List<String> data = readExcelData(columnName, nameOfSheet);
@@ -932,7 +996,31 @@ public class GenericKeywords {
 	        test.log(Status.INFO, "Selected option: " + option.getText());
 	    }
 	}
+	public void clickCheckboxBasedOnExcelParameter(String locator , String columnName, String sheetName ) {
+	    // Read the parameter value from Excel
+	    String parameter = readExcelData(columnName, sheetName).get(0); // Assuming you retrieve a single value from Excel
 
+	    WebElement checkboxElement = driver.findElement(getLocator(locator));
+
+	    // Check if the checkbox is already selected
+	    boolean isChecked = checkboxElement.isSelected();
+
+	    if ((parameter.equalsIgnoreCase("yes") && !isChecked) || (parameter.equalsIgnoreCase("no") && isChecked)) {
+	        // Click the checkbox only if it should be checked but isn't, or if it should be unchecked but is currently checked
+	        checkboxElement.click();
+	        test.log(Status.PASS, "Checkbox clicked and changed to the desired state.");
+	    } else if ((parameter.equalsIgnoreCase("yes") && isChecked) || (parameter.equalsIgnoreCase("no") && !isChecked)) {
+	        // Log that the checkbox is already in the desired state
+	        test.log(Status.PASS, "Checkbox is already in the desired state.");
+	    } else {
+	        // Handle the case when the parameter is neither "yes" nor "no"
+	        test.log(Status.FAIL, "Invalid parameter: " + parameter);
+	        System.out.println("Invalid parameter: " + parameter);
+	    }
+	}
+
+
+	
 	
 	
 
